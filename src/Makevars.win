@@ -1,0 +1,3 @@
+all: upwindorderedv4.dll
+upwindorderedv4.dll: $(OBJECTS)
+	$(SHLIB_LINK) -o $@ $(OBJECTS) $(ALL_LIBS)
