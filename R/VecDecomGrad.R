@@ -1,9 +1,11 @@
 #' Vector decomposition and remainder fields
 #'
 #' This function calculates the gradient field.
-#' @param surface matrix output from QPGlobal.
+#' @param surface matrix output from \code{\link{QPGlobal}} or \code{\link{QPotential}}.
 #' @keywords vector field decomposition, gradient field
-#' 
+#'
+#' @return returns an array of the gradient vector field.  The array has three dimensions with the respective lengths of the columns of the surface, the rows of the sruface, and the number of variables (always 2).  The two variables are the x-negative gradient of the quasi-potential surface and the y-negative gradient of the quasi-potential surface.
+#'
 #' @examples
 #' # First, the system of equations
 #' 	equationx <- "1.54*x*(1.0-(x/10.14)) - (y*x*x)/(1.0+x*x)"

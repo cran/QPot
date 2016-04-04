@@ -1,13 +1,16 @@
 #' Vector decomposition and remainder fields
 #'
 #' This function calculates the remainder field.
-#' @param surface matrix output from QPGlobal.
-#' @param x.rhs A string containing the right hand side of the equation for x.
-#' @param y.rhs A string containing the right hand side of the equation for y.
-#' @param x.bound two-element vector with respective minimum and maximum x values.
-#' @param y.bound two-element vector with respective minimum and maximum y values.
+#' @param surface matrix output from \code{\link{QPGlobal}} or \code{\link{QPotential}}.
+#' @param x.rhs a string containing the right hand side of the equation for x.
+#' @param y.rhs a string containing the right hand side of the equation for y.
+#' @param x.bound the x boundaries denoted at c(minimum, maximum).
+#' @param y.bound the y boundaries denoted at c(minimum, maximum).
 #' @keywords vector field decompoosition, remainder field
 #' 
+#'
+#' @return returns an array of the remainder vector field.  The array has three dimensions with the respective lengths of the columns of the surface, the rows of the sruface, and the number of variables (always 2).  The two variables are the x-remainder and y-remainder.
+#'
 #' @examples
 #' # First, the system of equations
 #' 	equationx <- "1.54*x*(1.0-(x/10.14)) - (y*x*x)/(1.0+x*x)"

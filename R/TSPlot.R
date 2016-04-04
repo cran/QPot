@@ -1,43 +1,44 @@
 #' Plot simulation of two-dimensional stochastic differential equations
 #'
-#' This function allows you to plot the simulation of simulate two-dimensional stochastic differential equations from \code{\link{TSTraj}}
+#' This function plots the simulation of two-dimensional stochastic differential equations from \code{\link{TSTraj}}
 #' @param mat a matrix output from \code{\link{TSTraj}}.
 #' @param deltat numeric value indicating the frequency of stochastic perturbation, as \eqn{\Delta t}, used in the function to recaluculate axes if applicable.
-#' @param dim dimensions of the plot; \code{dim=1} to plot a timeseries with \code{X} and \code{Y} on the ordinate axis or \code{dim=2} to plot the trjectories in state space (i.e., \code{X} and \code{Y} respectively on the abscissa and ordinate axes).
+#' @param dim dimensions of the plot; \code{dim = 1} to plot a timeseries with X and Y on the ordinate axis or \code{dim = 2} to plot the trjectories in state space (i.e., X and Y respectively on the abscissa and ordinate axes).
 #' @param xlim numeric vectors of length 2, giving the x coordinate range. Default \code{= 'NULL'} automatically sizes plot window.
 #' @param ylim numeric vectors of length 2, giving the y coordinate range. Default \code{= 'NULL'} automatically sizes plot window.
-#' @param x.lab for \code{dim=1}, allows user to specify the axis as "time" or "steps," with steps being \eqn{time \times \Delta t}
-#' @param dens if \code{dens=TRUE}, plots a horizontal one-dimensional density plot adjacent to the timerseries.
-#' @param lwd line width.
+#' @param x.lab for \code{dim = 1}, allows user to specify the axis as "time" or "steps," with steps being \eqn{time \times \Delta t}
+#' @param dens if \code{dens = TRUE}, plots a horizontal one-dimensional density plot adjacent to the timerseries.
+#' @param lwd line width.  Defaults to 1.
 #' @param line.alpha transparency of lines from 0--255.
-#' @param zero.axes if TRUE, then axes plotted at \code{X=0} and \code{Y=0}.
+#' @param zero.axes if TRUE, then axes plotted at \code{X = 0} and \code{Y = 0}.
 #' @param ... passes arguments to \code{\link{plot}}.
 #' @keywords plot stochastic simulations
 #' 
 #' @examples
-#' # First, the parameter values, as found in \code{\link{TSTraj}}
+#' # First, the parameter values, as found in TSTraj
 #'	model.state <- c(x = 3, y = 3)
 #'	model.sigma <- 0.2
-#'	model.deltat <- 0.005
+#'	model.deltat <- 0.05
 #'	model.time <- 100
 #'
 #' # Second, write out the deterministic skeleton of the equations to be simulated, 
-#' # as found in \code{\link{TSTraj}}
-#	#Example 1 from article
+#' # as found in TSTraj
+#'	#Example 1 from article
 #'	equationx <- "1.54*x*(1.0-(x/10.14)) - (y*x*x)/(1.0 + x*x)"
-#	equationy <- "((0.476*x*x*y)/(1 + x*x)) - 0.112590*y*y"
+#'	equationy <- "((0.476*x*x*y)/(1 + x*x)) - 0.112590*y*y"
 #'
-#' # Third, run it, as found in \code{\link{TSTraj}}
-#	ModelOut <- TSTraj(y0 = model.state, time = model.time, deltat = model.deltat, 
-#		x.rhs = equationx, y.rhs = equationy, sigma = model.sigma)
-# # Fourth, plot it:
-#	# in 1D
-#	TSPlot(ModelOut, deltat = model.deltat, dim = 1)
-#	# in 2D
-#	TSPlot(ModelOut, deltat = model.deltat, dim = 2)
+#' # Third, run it, as found in TSTraj
+#'	ModelOut <- TSTraj(y0 = model.state, time = model.time, deltat = model.deltat, 
+#'		x.rhs = equationx, y.rhs = equationy, sigma = model.sigma)
+#' # Fourth, plot it:
+#'	# in 1D
+#'	TSPlot(ModelOut, deltat = model.deltat, dim = 1)
+#'	# in 2D
+#'	TSPlot(ModelOut, deltat = model.deltat, dim = 2)
 
 TSPlot <- function(mat, deltat, dim = 1, xlim = 'NULL', ylim = 'NULL', x.lab = "time", dens = TRUE, lwd = 2, line.alpha = 130, zero.axes = TRUE, ...) {
 		if (missing(deltat) == TRUE) {stop("deltat is missing and needed to compute steps and 1D hist.  Please specify.")}
+		orig.par <- par()
 		global.min <- min(mat[,2:3], na.rm = T)
 		global.max <- max(mat[,2:3], na.rm = T)
 		x.min <- min(mat[,2], na.rm = T)
@@ -125,4 +126,5 @@ TSPlot <- function(mat, deltat, dim = 1, xlim = 'NULL', ylim = 'NULL', x.lab = "
 				lines(mat[,2] , mat[,3] , col = rgb(50,50,50,line.alpha,NULL,255) , lwd = lwd)				
 			}
 		}
+	par(new = F, fig = orig.par$fig)
 	}
