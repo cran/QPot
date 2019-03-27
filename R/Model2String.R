@@ -1,6 +1,6 @@
 #' Inserts parameter values into equations
 #'
-#' Converts differential equations from string-format (or function-format) with parameters (e.g. "a*x+b) to string-format with parameter values (e.g. 2*x+3).  Specifically, Model2String reads in the equations, searches for the differential equations within the function (if required), and replaces the parameters with numerical values given by the user.  Returns an array of strings containing the differential equations.
+#' Converts differential equations from string-format (or function-format) with parameters (e.g. "a*x+b) to string-format with parameter values (e.g. 2*x+3).  Specifically, Model2String reads in the equations, searches for the differential equations within the function (if required), and replaces the parameters with numerical values given by the user.  Returns an array of strings containing the differential equations.  This code is specifically given so that any problems can be found in R as opposed to receiving terse errors from the C code if this was built into the QPotential() function.
 #' 
 #' @param model contains the differential equations as given to \code{\link{TSTraj}}.  Can either be a string or a function used by the package \code{deSolve} (see third example).
 #' @param parms a named vector of paramters and their respective values for the deterministic equations.  If inputing a function and parms is empty, Model2String will return the equation as a string.
@@ -42,10 +42,11 @@
 #'  x.lhs.term = 'dx', y.lhs.term = 'dy') 
 
 
-Model2String <- function(model, parms = 'NULL', deSolve.form = FALSE, x.lhs.term = 'dx', y.lhs.term = 'dy', supress.print = FALSE, width.cutoff = 500) {
+Model2String <- function(model = NULL, parms = NULL, deSolve.form = FALSE, x.lhs.term = 'dx', y.lhs.term = 'dy', supress.print = FALSE, width.cutoff = 500) {
 	if (!supress.print) {
-		print("Note: This function is supplied as duct tape.  Long equations, equations spanning multiple lines, equations with strange notation, etc, may not work.  Always check the output.")
+		message("Note: This function is supplied to help convert equations to strings.  Long equations, equations spanning multiple lines, equations with strange notation, etc, may not work.  Always check the output.")
 	}
+	if (is.null(model)) {stop("No equation supplied to function Model2String")}
 	
 	if (deSolve.form == TRUE) {
 
@@ -59,7 +60,8 @@ Model2String <- function(model, parms = 'NULL', deSolve.form = FALSE, x.lhs.term
 		foundy = 0	#flag for making sure dy is only found once
 	
 	#remove the lhs and return the rhs
-		for (i in 1:length(temp)) {
+#		for (i in 1:length(temp)) { 
+		for (i in seq_along(temp)) {
 		#when searching, first look for the lhs defining whether the derivative is for x or y
 		#once found, look inside the string and use either '<-' or '=' to separate
 		# the lhs from the rhs
@@ -97,7 +99,8 @@ Model2String <- function(model, parms = 'NULL', deSolve.form = FALSE, x.lhs.term
 	}
 	
 #if parameters are not declared, then we do not have to replace anything
-	if (!(parms[1] == 'NULL')){
+	if (!is.null(parms)) {
+#	if (!(parms[1] == 'NULL')){
 #replace the parameter names in the equations with their values
 		allnames <-names(parms)
 		for (i in 1:length(parms)) {

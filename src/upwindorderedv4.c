@@ -36,7 +36,6 @@
 #define sgn(a) ((a) == 0 ? 0 : ((a) > 0  ? 1 : -1 ))
 #define max(a,b) ((a) >= (b) ? (a) : (b))
 #define min(a,b) ((a) <= (b) ? (a) : (b))
-#define INFTY 1.0e+6 /* This is the "maximum" value of the quasi-potential. It is also the default value... everything is initialized to this values before the solution computation starts. So points with unknown values have value 1.0e+6 */
 #define TOL 1.0e-12
 #define BETA 0.0
 #define BUFFERSIZE 1024	/* maximum size of the equation to be used */
@@ -60,6 +59,8 @@ double LY2 = 60.0; /* Same idea as LX2, but for the vertical direction */
 
 double FP1 = 6.60341; /* This is the x-coordinate of the initial point for the calculation (equilibirium or point on a limit cycle). */
 double FP2 = 3.04537; /* This is the y-coordinate of the initial point for the calculation (equilibirium or point on a limit cycle). */
+
+double INFTY = 1.0e+6;
 
 int_fast64_t KX=20, KY=20;
 int DEBUG = 0;
@@ -96,7 +97,7 @@ struct mysol {
 } mysol;
 
 int main(int argc, char **argv);
-void quasipotential(double *storage, double *tempxmin, double *tempxmax, int *tempxsteps, double *tempymin, double *tempymax, int *tempysteps, double *tempeqx, double *tempeqy, char **equationx, int *lenequationx, char **equationy, int *lenequationy, char **tempfilename, int *templengthfilename, int *tempdatasave, char **tempchfield, double *tempbounceedge, int *tempkx, int *tempky, int *tempDEBUG, int *tempVERBOSE);
+void quasipotential(double *storage, double *tempxmin, double *tempxmax, int *tempxsteps, double *tempymin, double *tempymax, int *tempysteps, double *tempeqx, double *tempeqy, char **equationx, int *lenequationx, char **equationy, int *lenequationy, char **tempfilename, int *templengthfilename, int *tempdatasave, char **tempchfield, double *tempbounceedge, int *tempkx, int *tempky, int *tempDEBUG, int *tempVERBOSE, double *tempINFTY);
 void write_output(double *storage, int HDwrite, int Rwrite);
 void write_output_original(void);
 
@@ -301,14 +302,14 @@ struct myvector myfieldchris(double x,double y) {
     switch( chfield ) {
         case 'p': /* positivevalues: Case to use if you want only positive values */
             if(x<0 && y<0)
-            {v.x=1000000.0;
-                v.y=1000000.0;}
+            {v.x=INFTY;/*1000000.0;*/
+                v.y=INFTY;}/*1000000.0;}*/
             else if(x<0)
-            {v.x=1000000.0;
+            {v.x=INFTY;/*1000000.0;*/
                 v.y=0.0;}
             else if(y<0)
             {v.x=0.0;
-                v.y=100000.0;}
+                v.y=INFTY;}/*100000.0;}*/
             else {
             	v.x = parse_expression_with_callbacks( xbuff, variable_callback, function_callback, &num_arguments );
                 v.y = parse_expression_with_callbacks( ybuff, variable_callback, function_callback, &num_arguments );
@@ -316,14 +317,14 @@ struct myvector myfieldchris(double x,double y) {
             break;
 		case 'b': /* bounce : Case to use if you want reflecting boundaries */
             if(x<(LX1+bounceedge*NX*hx) && y<(LY1+bounceedge*NY*hy) )
-            {v.x=1000000.0;
-                v.y=1000000.0;}
+            {v.x=INFTY;/*1000000.0;*/
+                v.y=INFTY;}/*1000000.0;}*/
             else if(x<(LX1+bounceedge*NX*hx))
-            {v.x=1000000.0;
+            {v.x=INFTY;/*1000000.0;*/
                 v.y=0.0;}
             else if(y<(LY1+bounceedge*NY*hy))
             {v.x=0.0;
-                v.y=100000.0;}
+                v.y=INFTY;}/*100000.0;}*/
             else {
             	v.x = parse_expression_with_callbacks( xbuff, variable_callback, function_callback, &num_arguments );
                 v.y = parse_expression_with_callbacks( ybuff, variable_callback, function_callback, &num_arguments );
@@ -458,7 +459,7 @@ void ordered_upwind(void) {
         ms[ind]=2;
         deltree();
         mycount++;
-        if( i==2 || i==nx1-2 || j==2 || j== ny1-2 || g[ind] >= INFTY-1) {
+        if( i==2 || i==nx1-2 || j==2 || j== ny1-2 || g[ind] >= INFTY-TOL) { /*1) { */
             Rprintf("%ld\t(%ld\t%ld) is accepted, g=%.4f\n",mycount,i,j,g[ind]);
             Rprintf("Final count = %d\n",count);
             break; /* quit if we reach the boundary of the computational domain */
@@ -466,17 +467,21 @@ void ordered_upwind(void) {
         /*	Rprintf("%ld\t(%ld\t%ld) is accepted, g=%.4f\n",mycount,i,j,g[ind]); */
         
         /* update considered neighbors of the accepted point */
-        for( k=0; k<8; k++ ) {
+        for( k=0; k<8; k++ ) { /* consider all eight neighbors of the accepted? point */
             ind1=ind+neii[k];
-            if( ms[ind1] == 2 ) {
+            if( ms[ind1] == 2 ) { 
+			/* if current neighbor ind1 is in accepted front */
+			/* check to see if two neighbors are in accepted front or accepted */
                 ind1m=ind+neii[(k-1+8)%8];
                 ind1p=ind+neii[(k+1)%8];
-                if( ms[ind1m] >= 2 && ms[ind1p] >= 2 ) {
+                if( ms[ind1m] >= 2 && ms[ind1p] >= 2 ) { 
+					/* if neighbors are in accepted front or accepted*/
+					/* then make ind1 accepted */
                     ms[ind1]=3;
                     /*	  Rprintf("ms[%ld, %ld] = 3\n",ind1%NX,ind1/NX); */
                 }
-                else {
-                    g0=g[ind];
+                else { /* neighbors are unknown or considered */
+                    g0=g[ind]; /*quasipotential of focal */
                     ii=ind1%NX;
                     jj=ind1/NX;
 /* v2: converts index value to x or y value */
@@ -486,7 +491,11 @@ void ordered_upwind(void) {
                     for( i0=max(i-KX,0); i0<=min(i+KX,nx1); i0++) for( j0=max(j-KY,0); j0<=min(j+KY,ny1); j0++ ) {
                         indupdate=i0+NX*j0;
                         update='y';
-                        if( ms[indupdate] == 1 ) {
+/* It appears: */
+/* So although only immediate neighbors are used to add to considered */
+/* compute the quasi-potential from all known points around within KX and KY */
+                        
+                        if( ms[indupdate] == 1 ) { /*point is a considered point */
 /* v2: converts index value to x or y value */
                             x=LX1 + i0*hx;
                             y=LY1 + j0*hy;
@@ -497,21 +506,23 @@ void ordered_upwind(void) {
                             b=B[indupdate];
                             bdotvec=dotproduct(b,vec);
                             
-                            if( update == 'y' && fabs(max(len0,len1)-length(xnewac-x1,ynewac-y1)-min(len0,len1)) > TOL ) {
-                                sol=triangle_update(indupdate,ind,ind1);
-                                g[indupdate]=min(g[indupdate],sol.g);
+                            if( update == 'y' && abs(max(len0,len1)-length(xnewac-x1,ynewac-y1)-min(len0,len1)) > TOL ) {
+                                sol=triangle_update(indupdate,ind,ind1); /* returns a double g and a char c */
+                                g[indupdate]=min(g[indupdate],sol.g); /* ?pick the minimum value for the quasipotential? */
                                 if( sol.g <= g[indupdate] ) {
                                     updatetree(indupdate);
                                     /*	    Rprintf("( %ld %ld ) has been updated, g = %.4f\n", i0,j0,g[indupdate]); */
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+                                } /* if( sol.g <= g[indupdate] ) */
+                            } /* if( update == 'y' && fabs(max(len0,len1)-length(xnewac-x1,ynewac-y1)-min(len0,len1)) > TOL )*/
+                        } /* if( ms[indupdate] == 1 ) */
+                    } /* for( i0=max(i-KX,0); i0<=min(i+KX,nx1); i0++) for( j0=max(j-KY,0); j0<=min(j+KY,ny1); j0++ )  */
+                } /* NOT if( ms[ind1m] >= 2 && ms[ind1p] >= 2 ) */
+            } /* if( ms[ind1] == 2 ) */
+        } /* for( k=0; k<8; k++ ) */
         
         nc=0;
+        /* look at the neighbors and change the individuals that are unknown to considered */
+        /* but this doesn't appear to change ms, just adds them to a list of nc */
         for( k=0;k<8;k++) {
             ind1=ind+neii[k];
             if( ms[ind1]==0 )  {
@@ -540,6 +551,8 @@ void ordered_upwind(void) {
                 x0=LX1 + hx*i0;
                 y0=LY1 + hy*j0;
                 if( ms[ind0] == 2 || (ms[ind0]==3 && fabs(i-i0)<1.5 && fabs(j-j0)<1.5) ) {
+				/* look at accepted front or accepted points */
+				/* ?that are 1 unit away from the ind0 point? */
                     update='y';
                     if( bdotvec > 0.0 ) {
                         v0.x=x-x0;
@@ -652,6 +665,8 @@ struct mysol triangle_update(int_fast64_t ind,int_fast64_t ind0,int_fast64_t ind
         }
     }
     else sol.c='n';
+    
+    
         if( sol.c == 'n' ) {
             gtent0=one_pt_update(ind,ind0);
             gtent1=one_pt_update(ind,ind1);
@@ -900,7 +915,7 @@ void deltree() {
 
 
 /********************************************************/
-void quasipotential(double *storage, double *tempxmin, double *tempxmax, int *tempxsteps, double *tempymin, double *tempymax, int *tempysteps, double *tempeqx, double *tempeqy, char **equationx, int *lenequationx, char **equationy, int *lenequationy, char **tempfilename, int *templengthfilename, int *tempdatasave, char **tempchfield, double *tempbounceedge, int *tempkx, int *tempky, int *tempDEBUG, int *tempVERBOSE) {
+void quasipotential(double *storage, double *tempxmin, double *tempxmax, int *tempxsteps, double *tempymin, double *tempymax, int *tempysteps, double *tempeqx, double *tempeqy, char **equationx, int *lenequationx, char **equationy, int *lenequationy, char **tempfilename, int *templengthfilename, int *tempdatasave, char **tempchfield, double *tempbounceedge, int *tempkx, int *tempky, int *tempDEBUG, int *tempVERBOSE, double *tempINFTY) {
 /* Assign function parameter values to variables defined in C code*/
 /* x range, y range, and starting values */
 	LX1 = tempxmin[0]; LX2 = tempxmax[0]; NX = tempxsteps[0]; 
@@ -910,6 +925,7 @@ void quasipotential(double *storage, double *tempxmin, double *tempxmax, int *te
 	KX = tempkx[0]; KY = tempky[0];
 	DEBUG = tempDEBUG[0];
 	VERBOSE = tempVERBOSE[0];
+	INFTY = tempINFTY[0];
 	
 	if (VERBOSE) {
 		Rprintf("The upwind ordered method will be chatty\n");
@@ -1024,59 +1040,16 @@ void quasipotential(double *storage, double *tempxmin, double *tempxmax, int *te
 		if (VERBOSE) {Rprintf("File opened.\n");}
 		if (VERBOSE) {Rprintf("In datasave case 1\n");}
 		write_output(storage,1,0);
-/* Working on code to transpose g[] as it writes to HD and R */    
-/*		fg=fopen(filename, "w");
-		ind=0;
-		for( j=0; j<(NY); j++ ) {
-			for( i=0; i<(NX-1); i++ ) {
-				tempg = (1.0/2.0)*g[ind];
-				fprintf(fg,"%.4e\t",tempg);
-				ind++;
-			}
-			tempg = (1.0/2.0)*g[ind];
-			fprintf(fg,"%.4e",tempg);
-			ind++;
-			fprintf(fg,"\n");
-		}
-		fclose(fg);
-*/
 		break;
 	case 2: /* saves to R, but does not save to hard drive */
 		if (VERBOSE) {Rprintf("Saves only to R\n");}
 		if (VERBOSE) {Rprintf("In datasave case 2\n");}
 		write_output(storage,0,1);
-/*		ind=0;
-		for( j=0; j<(NY); j++ ) {
-			for( i=0; i<(NX-1); i++ ) {
-				storage[ind] = (1.0/2.0)*g[ind];
-				ind++;
-			}
-			storage[ind] = (1.0/2.0)*g[ind];
-			ind++;
-		}
-*/
 		break;
 	case 3:	/* saves to R and saves to hard drive */
 		if (VERBOSE) {Rprintf("In datasave case 3\n");}
 		if (VERBOSE) {Rprintf("File opened.\n");}
 		write_output(storage,1,1);
-/*		fg=fopen(filename, "w");
-		ind=0;
-		for( j=0; j<(NY); j++ ) {
-			for( i=0; i<(NX-1); i++ ) {
-				tempg = (1.0/2.0)*g[ind];
-				fprintf(fg,"%.4e\t",tempg);
-				storage[ind] = tempg;
-				ind++;
-			}
-			tempg = (1.0/2.0)*g[ind];
-			fprintf(fg,"%.4e",tempg);
-			storage[ind] = tempg;
-			ind++;
-			fprintf(fg,"\n");
-		}
-		fclose(fg);
-*/
 		break;
 	case 5: /* uses original code to write a file to the HD */
 		write_output_original();

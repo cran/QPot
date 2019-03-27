@@ -4,9 +4,9 @@
 \alias{VecDecomPlot}
 \title{Plotting function for vector decomposition and remainder fields}
 \usage{
-VecDecomPlot(x.field, y.field, dens, x.bound, y.bound, xlim = "NULL",
-  ylim = "NULL", arrow.type = "equal", tail.length = 0.25,
-  head.length = 0.25, ...)
+VecDecomPlot(x.field, y.field, dens, x.bound, y.bound, xlim = NULL,
+  ylim = NULL, arrow.type = "equal", tail.length = 0.25,
+  head.length = 0.25, xlab = "X", ylab = "Y", ...)
 }
 \arguments{
 \item{x.field}{a two-dimensional array containing the x-values for the vector field, generated from \code{\link{VecDecomAll}}, \code{\link{VecDecomVec}}, \code{\link{VecDecomGrad}}, or \code{\link{VecDecomRem}}.}
@@ -19,15 +19,19 @@ VecDecomPlot(x.field, y.field, dens, x.bound, y.bound, xlim = "NULL",
 
 \item{y.bound}{the y boundaries denoted at c(minimum, maximum) for the quasi-potential simulation.}
 
-\item{xlim}{numeric vectors of length 2, giving the x coordinate range.}
+\item{xlim}{numeric vectors of length 2, giving the x coordinate range. Default \code{= NULL} automatically sizes plot window.}
 
-\item{ylim}{numeric vectors of length 2, giving the y coordinate range.}
+\item{ylim}{numeric vectors of length 2, giving the y coordinate range. Default \code{= NULL} automatically sizes plot window.}
 
 \item{arrow.type}{sets the type of line segments plotted. If set to "proportional" the length of the line segments reflects the magnitude of the derivative. If set to "equal" the line segments take equal lengths, simply reflecting the gradient of the derivative(s). Defaults to "equal".}
 
 \item{tail.length}{multiplies the current length of the tail (both proportional and equal arrow.types) by the specified factor.  The argument defaults to 1, which is length of the longest vector within the domain boundaries (i.e., the entire field).}
 
 \item{head.length}{length of the edges of the arrow head (in inches).}
+
+\item{xlab}{label for x axis.  Default is 'X'}
+
+\item{ylab}{label for y axis.  Default is 'Y'}
 
 \item{...}{passes arguments to both \code{\link{plot}}.}
 }

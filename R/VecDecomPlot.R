@@ -6,8 +6,10 @@
 #' @param dens two-element vector respectively specifying the number of respective arrows in the x and y directions.
 #' @param x.bound the x boundaries denoted at c(minimum, maximum) for the quasi-potential simulation.
 #' @param y.bound the y boundaries denoted at c(minimum, maximum) for the quasi-potential simulation.
-#' @param xlim numeric vectors of length 2, giving the x coordinate range.
-#' @param ylim numeric vectors of length 2, giving the y coordinate range.
+#' @param xlim numeric vectors of length 2, giving the x coordinate range. Default \code{= NULL} automatically sizes plot window.
+#' @param ylim numeric vectors of length 2, giving the y coordinate range. Default \code{= NULL} automatically sizes plot window.
+#' @param xlab label for x axis.  Default is 'X'
+#' @param ylab label for y axis.  Default is 'Y'
 #' @param arrow.type sets the type of line segments plotted. If set to "proportional" the length of the line segments reflects the magnitude of the derivative. If set to "equal" the line segments take equal lengths, simply reflecting the gradient of the derivative(s). Defaults to "equal".
 #' @param tail.length multiplies the current length of the tail (both proportional and equal arrow.types) by the specified factor.  The argument defaults to 1, which is length of the longest vector within the domain boundaries (i.e., the entire field).
 #' @param head.length length of the edges of the arrow head (in inches).
@@ -63,15 +65,16 @@
 #' 	VecDecomPlot(x.field = VDAll[,,5], y.field = VDAll[,,6], dens = c(25,25), 
 #'		x.bound = xbounds, y.bound = ybounds, tail.length = 0.15, head.length = 0.05)
 
-VecDecomPlot <- function(x.field, y.field, dens, x.bound, y.bound, xlim = 'NULL', ylim = 'NULL', arrow.type = "equal", tail.length = 0.25, head.length = 0.25, ...){
+VecDecomPlot <- function(x.field, y.field, dens, x.bound, y.bound, xlim = NULL, ylim = NULL, arrow.type = "equal", tail.length = 0.25, head.length = 0.25, xlab = "X", ylab = "Y", ...){
 
 		if(any(dim(x.field) != dim(y.field))){stop("x.field and y.field have at least one unequal dimension length")}
 		x.range <- max(x.bound)-min(x.bound)
 		y.range <- max(y.bound)-min(y.bound)
 		row.range <- nrow(x.field)-1
 		col.range <- ncol(x.field)-1
+		row.min = NA; row.max = NA; col.min = NA; col.max = NA
 
-		if(missing(xlim) == F & missing(ylim) == F) {
+		if(missing(xlim) == FALSE & missing(ylim) == FALSE) {
 		row.min <- (min(xlim)-min(x.bound))/x.range*row.range + 1
 		row.max <- (max(xlim)-min(x.bound))/x.range*row.range + 1
 		col.min <- (min(ylim)-min(y.bound))/y.range*col.range + 1
@@ -92,8 +95,7 @@ VecDecomPlot <- function(x.field, y.field, dens, x.bound, y.bound, xlim = 'NULL'
 				ylim <- c(y.min,y.max)
 				}
 			}
-
- 	sub.x <- seq(row.min, row.max, length.out=dens[1])
+	sub.x <- seq(row.min, row.max, length.out=dens[1])
 	sub.y <- seq(col.min, col.max, length.out=dens[2])
 
 	sub.x.val <- ((sub.x-1)/row.range)*x.range + min(x.bound)
@@ -125,7 +127,7 @@ VecDecomPlot <- function(x.field, y.field, dens, x.bound, y.bound, xlim = 'NULL'
  	qpr <- nrow(dx.plot)
 	qpc <- ncol(dy.plot)
 
-	plot(0 , type = "n" , xlim = xlim , ylim = ylim , las = 1, ...)
+	plot(0 , type = "n" , xlim = xlim , ylim = ylim , las = 1, xlab = xlab, ylab = ylab, ...)
 	for (j in 1:qpr){
 			for (i in 1:qpc){
 				x0 <- sub.x.val[j] - (dx.plot[j,i]/2)

@@ -1,4 +1,7 @@
 # An R package for stochastic differential equation quasi-potential analysis
+[![cran version](https://www.r-pkg.org/badges/version/QPot)]( https://CRAN.R-project.org/package=QPot)
+[![rstudio mirror per-month downloads](https://cranlogs.r-pkg.org/badges/QPot)](https://github.com/metacran/cranlogs.app)
+[![rstudio mirror total downloads](https://cranlogs.r-pkg.org/badges/grand-total/QPot?color=yellowgreen)](https://github.com/metacran/cranlogs.app)
 
 ### Christopher M. Moore, Christopher R. Stieha, Ben C. Nolting, Maria K. Cameron, and Karen C. Abbott
 
@@ -8,9 +11,9 @@ QPot offers a range of tools to simulate, analyze, and visualize the dynamics of
 
 M. K. Cameron. 2012. Finding the quasipotential for nongradient SDEs. *Physica D*, 241(18):1532–1550.
 
-Moore, C.M., Stieha, C.R., Nolting, B.C., Cameron, M.K., and Abbott, K.C. *Submitted to The R Journal.* QPot: An R package for stochastic differential equation quasi-potential analysis
+Moore, C.M., Stieha, C.R., Nolting, B.C., Cameron, M.K., and Abbott, K.C. *Resubmitted to The R Journal.* QPot: An R package for stochastic differential equation quasi-potential analysis
 
-B. C. Nolting and K. C. Abbott. *Accepted.* Balls, cups, and quasi-potentials: quantifying stability in stochastic systems. *Ecology.*
+B. C. Nolting and K. C. Abbott. 2016. Balls, cups, and quasi-potentials: quantifying stability in stochastic systems. *Ecology,* 97(4):850-864.
 
 ### Functions ###
 
@@ -55,19 +58,25 @@ require(QPot)
 
 var.eqn.x <- "(alpha*x)*(1-(x/beta)) - ((delta*(x^2)*y)/(kappa+(x^2)))"
 var.eqn.y <- "((gamma*(x^2)*y)/(kappa+(x^2))) - mu*(y^2)"
-
-model.state <- c(x = 1, y = 2)
 model.parms <- c(alpha = 1.54, beta = 10.14, delta = 1, gamma = 0.476, 
-					kappa = 1, mu = 0.112509)
+	kappa = 1, mu = 0.112509)
+parms.eqn.x <- Model2String(var.eqn.x, parms = model.parms)
+parms.eqn.y <- Model2String(var.eqn.y, parms = model.parms, 
+	supress.print = TRUE) # does not print to screen
+model.state <- c(x = 1, y = 2)
 model.sigma <- 0.05
-model.time <- 1000
+model.time <- 1000 # we used 12500 in the figures
 model.deltat <- 0.025
 ```
 #### 0.2.2 Time series ####
 ```R
 ts.ex1 <- TSTraj(y0 = model.state, time = model.time, deltat = model.deltat, 
-			x.rhs = var.eqn.x, y.rhs = var.eqn.y, parms = model.parms, 
-			sigma = model.sigma)
+     x.rhs = parms.eqn.x, y.rhs = parms.eqn.y, sigma = model.sigma)
+
+# Could also use TSTraj to combine equation strings and parameter values
+#ts.ex1 <- TSTraj(y0 = model.state, time = model.time, deltat = model.deltat, 
+#     x.rhs = var.eqn.x, y.rhs = var.eqn.y, parms = model.parms, sigma = model.sigma)
+
 ```
 #### 0.2.3 Time series plots ####
 ```R
@@ -78,12 +87,20 @@ TSDensity(ts.ex1, dim = 2)
 ```
 #### 0.3 Compute the local quasi-potentials ####
 ```R
-equation.x = "1.54*x*(1.0-(x/10.14))-(y*x*x)/(1.0+x*x)"
-equation.y = "((0.476*x*x*y)/(1+x*x))-0.112590*y*y"
+parms.eqn.x <- Model2String(var.eqn.x, parms = model.parms)
+   # if not done in a previous step
+parms.eqn.x <- Model2String(var.eqn.y, parms = model.parms, 
+   supress.print = TRUE) # does not print to screen
+   
+# Could also input the values by hand and use this version
+# parms.eqn.x = "1.54*x*(1.0-(x/10.14)) - (y*(x^2))/(1.0+(x^2))"
+# parms.eqn.x = "((0.476*(x^2)*y)/(1+(x^2))) - 0.112509*(y^2)"
+
 bounds.x = c(-0.5, 20.0)
 bounds.y = c(-0.5, 20.0)
 step.number.x = 4100
 step.number.y = 4100
+
 eq1.x = 1.40491
 eq1.y = 2.80808
 eq2.x = 4.9040
@@ -113,19 +130,19 @@ QPContour(surface = ex1.global, dens = c(1000, 1000),
 
 #### 0.6 Vector field decomposition ####
 ```R
-VDAll <- VecDecomAll(surface = ex1.global, x.rhs = equation.x, 
-					y.rhs = equation.y, x.bound = bounds.x, y.bound = bounds.y)
+VDAll <- VecDecomAll(surface = ex1.global, x.rhs = parms.eqn.x, 
+					y.rhs = parms.eqn.y, x.bound = bounds.x, y.bound = bounds.y)
 
-VecDecomPlot(field = list(VDAll[,,1], VDAll[,,2]), dens = c(25, 25), 
-			x.bound = bounds.x, y.bound = bounds.y, x.lim = c(0, 11), 
-			y.lim = c(0, 6), arrow.type = "equal", 
-			tail.length = 0.25, head.length = 0.025)
+VecDecomPlot(x.field = VDAll[,,1], y.field = VDAll[,,2], dens = c(25, 25), 
+			x.bound = bounds.x, y.bound = bounds.y, xlim = c(0, 11), 
+			ylim = c(0, 6), arrow.type = "equal", tail.length = 0.25, 
+			head.length = 0.025)
 
-VecDecomPlot(field = list(VDAll[,,3], VDAll[,,4]), dens = c(25, 25), 
+VecDecomPlot(x.field = VDAll[,,3], y.field = VDAll[,,4], dens = c(25, 25), 
 			x.bound = bounds.x, y.bound = bounds.y, arrow.type = "proportional", 
 			tail.length = 0.25, head.length = 0.025)
 
-VecDecomPlot(field = list(VDAll[,,5], VDAll[,,6]), dens = c(25, 25), 
+VecDecomPlot(x.field = VDAll[,,5], y.field = VDAll[,,6], dens = c(25, 25), 
 			x.bound = bounds.x, y.bound = bounds.y, arrow.type = "proportional", 
 			tail.length = 0.35, head.length = 0.025)
 ```
@@ -137,8 +154,8 @@ VDV <- VecDecomVec(x.num.steps = step.number.x, y.num.steps = step.number.y,
 					y.bound = bounds.y)
 
 VecDecomPlot(field = list(VDV[,,1], VDV[,,2]), dens = c(50, 50), 
-				x.bound = bounds.x, y.bound=bounds.y, x.lim = c(0, 11), 
-				y.lim=c(0, 6), arrow.type="proportional", 
+				x.bound = bounds.x, y.bound=bounds.y, xlim = c(0, 11), 
+				ylim=c(0, 6), arrow.type="proportional", 
 				tail.length=0.75, head.length=0.03)
 ```
 
