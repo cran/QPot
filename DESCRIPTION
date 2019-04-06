@@ -1,5 +1,5 @@
 Package: QPot
-Version: 1.4
+Version: 1.5
 Date: 2019-03-24
 Title: Quasi-Potential Analysis for Stochastic Differential Equations
 Authors@R: c(
@@ -23,7 +23,7 @@ URL: https://www.r-project.org, https://github.com/bmarkslash7/QPot
 BugReports: https://github.com/bmarkslash7/QPot/issues
 RoxygenNote: 5.0.0
 NeedsCompilation: yes
-Packaged: 2019-03-27 02:50:58 UTC; stieha
+Packaged: 2019-04-06 12:43:36 UTC; stieha
 Author: Christopher Moore [aut],
   Christopher Stieha [aut, cre],
   Ben Nolting [aut],
@@ -32,4 +32,4 @@ Author: Christopher Moore [aut],
   James Gregson [cph] (author of expression_parser library:
     https://github.com/jamesgregson/expression_parser)
 Repository: CRAN
-Date/Publication: 2019-03-27 10:00:20 UTC
+Date/Publication: 2019-04-06 14:42:43 UTC

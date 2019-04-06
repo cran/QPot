@@ -1,4 +1,4 @@
-2bcc74299996b18f050e6d7cde90bd47 *DESCRIPTION
+4a748ed156f897df86012bd1f885cab2 *DESCRIPTION
 431aba3d96c814a6c2c221228e18a176 *NAMESPACE
 50308d8b808c8adb3fb136946379b012 *NEWS
 731e322dc1f6a1a614a0d65196c310d6 *R/Model2String.R
@@ -22,10 +22,10 @@ f85d17a0c2d4c8454ae311773d67b6fb *demo/Ex1_test.R
 49227ef52a6bd9fc1fe001d2f4a23fb0 *demo/Ex3_test.R
 89af1889d3be855e30f2ae4d733ef600 *inst/CITATION
 9f266c138ea1bd3ad6aec3b7101ed9a5 *inst/doc/QPot_Example1.R
-83d2a424eb93b9ade35c5cb3e7fed9b6 *inst/doc/QPot_Example1.html
+7fd36a4581fcb7c23a3a46fcee6fb2fd *inst/doc/QPot_Example1.html
 ced148d27dd28de8d221e0fb131dd315 *inst/doc/QPot_Example1.md.rsp
 8951794eb1ca74174648eff4b4833067 *inst/doc/QPot_Example2.R
-6b3c5a0906bcfe524c3aee428152946c *inst/doc/QPot_Example2.html
+9bc1f38a1911759b3bf5929eb68459df *inst/doc/QPot_Example2.html
 3bddacbc5c685a79f3960785b3d6f52d *inst/doc/QPot_Example2.md.rsp
 b81af4f3e4404a6aaa6e35a656419ac1 *inst/doc/QPot_Rarticle.pdf
 6cd529b8faf6ac2753dcc22389199e23 *inst/doc/QPot_Rarticle.pdf.asis
@@ -47,7 +47,7 @@ f349d3fa85852bfefe11ef0abbb8bd11 *src/Makevars
 6ced1da2b745886b816f9ff206f2edf3 *src/Makevars.win
 7f1c9d34bf1a028f338345cf522c3a34 *src/expression_parser.c
 7022188b5b6811cc0d3512c34ab8ddda *src/expression_parser.h
-e7bbf9590ab2bb0ad570fed58a0948a9 *src/upwindorderedv4.c
+74fad727ed1f4d813ab9fb6664662702 *src/upwindorderedv4.c
 aded4b6e87090a7bd79e15db5adef62a *vignettes/0_Introduction_to_quasi-potential_analysis.Rmd
 14155298f48eae7f1ddd4f31c8b357f2 *vignettes/0_Introduction_to_quasi-potential_analysis.html
 ef00ffac171cb17bdf0396905f63909a *vignettes/1_Analyzing_the_deterministic_skeleton.Rmd
